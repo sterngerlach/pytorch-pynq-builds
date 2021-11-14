@@ -11,6 +11,8 @@ Wheels for ZCU-104 are built in the following environment:
 - Pynq Linux v2.6 (based on Ubuntu 18.04) (rootfs is available at [here](http://www.pynq.io/board.html))
 - Python 3.6.5
 
+See [here](./how-to-build-wheels.md) to build wheels using Docker and Pynq rootfs.
+
 # Environment variables for building PyTorch wheels (armv7l)
 - PyTorch 1.7.1: See [armv7l/pytorch-1.7.1-set-env.sh](./armv7l/pytorch-1.7.1-set-env.sh)
 - PyTorch 1.9.1: See [armv7l/pytorch-1.9.1-set-env.sh](./armv7l/pytorch-1.9.1-set-env.sh)
