@@ -425,7 +425,7 @@ root@dec5fb7f5b41:~/pytorch-1.9.1# cat setup.py | head -n 70
 
 - Set `CFLAGS="-mfpu=neon -D__NEON__"` to enable ARM Neon intrinsics.
 CMake module `cmake/Modules/FindARM.cmake` checks whether the Neon instruction is available or not on the machine by reading `/proc/cpuinfo`, and another CMake module `cmake/Dependencies.cmake` appends the compiler options to use Neon intrinsics (`-mfpu=neon -D__NEON__`).
-In the Docker container, however, `/proc/cpuinfo` prints the CPU information of the host machine (Intel Xeon E5-1620 in this case), and Neon intrinsics is not detected.
+In the Docker container, however, `cat /proc/cpuinfo` prints the CPU information of the host machine (Intel Xeon E5-1620 in this case), and Neon intrinsics is not detected.
 For workaround, we manually append the compiler options (`-mfpu=neon -D__NEON__`) to use Neon intrinsics.
 If you are building wheels for ZCU-104 (aarch64), set `CFLAGS="-D__NEON__"` instead of `CFLAGS="-mfpu=neon -D__NEON__"`.
 - Set `USE_CUDA=0` and `USE_CUDNN=0` to disable CUDA and cuDNN builds, because these are not available on the Pynq-Z2 and ZCU-104.
@@ -504,7 +504,8 @@ root@dec5fb7f5b41:~/pytorch-1.9.1# which ninja
 ```
 
 After Ninja is successfully installed, build the PyTorch using `setup.py`, which may take several hours.
-We should double-check that ARM Neon instruction is enabled (`-mfpu=neon -D__NEON__`).
+If you want to rerun CMake, append `--cmake` option to `setup.py` (use `python3 setup.py build --cmake`).
+We should double-check that ARM Neon instruction is enabled (`-mfpu=neon -D__NEON__` or `-D__NEON__`).
 We recommend using `tmux` or `screen` if you are using the host machine over SSH.
 ```
 root@dec5fb7f5b41:~/pytorch-1.9.1# python3 setup.py build
@@ -606,7 +607,265 @@ cmake -GNinja -DBUILD_PYTHON=True -DBUILD_TEST=False -DCMAKE_BUILD_TYPE=Release 
 -- Build files have been written to: /root/pytorch-1.9.1/build
 cmake --build . --target install --config Release -- -j 8
 [691/3616] Building C object sleef/src/libm/CMakeFiles/sleefdetpurec_scalar.dir/sleefsimddp.c.o
+
+-- Building with NumPy bindings
+-- Not using cuDNN
+-- Not using CUDA
+-- Not using MKLDNN
+-- Not using NCCL
+-- Building without distributed package
+
+Copying extension caffe2.python.caffe2_pybind11_state
+Copying caffe2.python.caffe2_pybind11_state from torch/lib/python3.6/site-packages/caffe2/python/caffe2_pybind11_state.cpython-36m-arm-linux-gnueabihf.so to /root/pytorch-1.9.1/build/lib.linux-armv7l-3.6/caffe2/python/caffe2_pybind11_state.cpython-36m-arm-linux-gnueabihf.so
+copying torch/lib/python3.6/site-packages/caffe2/python/caffe2_pybind11_state.cpython-36m-arm-linux-gnueabihf.so -> /root/pytorch-1.9.1/build/lib.linux-armv7l-3.6/caffe2/python
+building 'torch._C' extension
+creating build/temp.linux-armv7l-3.6
+creating build/temp.linux-armv7l-3.6/torch
+creating build/temp.linux-armv7l-3.6/torch/csrc
+arm-linux-gnueabihf-gcc -pthread -DNDEBUG -g -fwrapv -O2 -Wall -Wstrict-prototypes -mfpu=neon -D__NEON__ -Wdate-time -D_FORTIFY_SOURCE=2 -fPIC -I/usr/include/python3.6m -c torch/csrc/stub.c -o build/temp.linux-armv7l-3.6/torch/csrc/stub.o -Wall -Wextra -Wno-strict-overflow -Wno-unused-parameter -Wno-missing-field-initializers -Wno-write-strings -Wno-unknown-pragmas -Wno-deprecated-declarations -fno-strict-aliasing -Wno-missing-braces
+arm-linux-gnueabihf-gcc -pthread -shared -Wl,-O1 -Wl,-Bsymbolic-functions -Wl,-Bsymbolic-functions -specs=/usr/share/dpkg/no-pie-link.specs -Wl,-z,relro -Wl,-Bsymbolic-functions -specs=/usr/share/dpkg/no-pie-link.specs -Wl,-z,relro -mfpu=neon -D__NEON__ -Wdate-time -D_FORTIFY_SOURCE=2 build/temp.linux-armv7l-3.6/torch/csrc/stub.o -L/root/pytorch-1.9.1/torch/lib -ltorch_python -o build/lib.linux-armv7l-3.6/torch/_C.cpython-36m-arm-linux-gnueabihf.so -Wl,-rpath,$ORIGIN/lib
+building 'torch._dl' extension
+arm-linux-gnueabihf-gcc -pthread -DNDEBUG -g -fwrapv -O2 -Wall -Wstrict-prototypes -mfpu=neon -D__NEON__ -Wdate-time -D_FORTIFY_SOURCE=2 -fPIC -I/usr/include/python3.6m -c torch/csrc/dl.c -o build/temp.linux-armv7l-3.6/torch/csrc/dl.o
+arm-linux-gnueabihf-gcc -pthread -shared -Wl,-O1 -Wl,-Bsymbolic-functions -Wl,-Bsymbolic-functions -specs=/usr/share/dpkg/no-pie-link.specs -Wl,-z,relro -Wl,-Bsymbolic-functions -specs=/usr/share/dpkg/no-pie-link.specs -Wl,-z,relro -mfpu=neon -D__NEON__ -Wdate-time -D_FORTIFY_SOURCE=2 build/temp.linux-armv7l-3.6/torch/csrc/dl.o -o build/lib.linux-armv7l-3.6/torch/_dl.cpython-36m-arm-linux-gnueabihf.so
+-------------------------------------------------------------------------
+|                                                                       |
+|    It is no longer necessary to use the 'build' or 'rebuild' targets  |
+|                                                                       |
+|    To install:                                                        |
+|      $ python setup.py install                                        |
+|    To develop locally:                                                |
+|      $ python setup.py develop                                        |
+|    To force cmake to re-generate native build files (off by default): |
+|      $ python setup.py develop --cmake                                |
+|                                                                       |
+-------------------------------------------------------------------------
+```
+
+After the bulid is complete, create a wheel file using `setup.py`:
+```
+root@dec5fb7f5b41:~/pytorch-1.9.1# python3 setup.py bdist_wheel
+Building wheel torch-1.9.0a0+gitdfbd030
+-- Building version 1.9.0a0+gitdfbd030
+cmake --build . --target install --config Release -- -j 8
+[1/2] Install the project...
+-- Install configuration: "Release"
+/usr/lib/python3.6/distutils/dist.py:261: UserWarning: Unknown distribution option: 'long_description_content_type'
+  warnings.warn(msg)
+running bdist_wheel
+running build
+running build_py
+copying caffe2/proto/gen_proto_typestubs_helper.py -> build/lib.linux-armv7l-3.6/caffe2/proto
+copying caffe2/proto/predictor_consts_pb2.py -> build/lib.linux-armv7l-3.6/caffe2/proto
+copying caffe2/proto/hsm_pb2.py -> build/lib.linux-armv7l-3.6/caffe2/proto
+copying caffe2/proto/caffe2_pb2.py -> build/lib.linux-armv7l-3.6/caffe2/proto
+copying caffe2/proto/metanet_pb2.py -> build/lib.linux-armv7l-3.6/caffe2/proto
+copying caffe2/proto/prof_dag_pb2.py -> build/lib.linux-armv7l-3.6/caffe2/proto
+copying caffe2/proto/torch_pb2.py -> build/lib.linux-armv7l-3.6/caffe2/proto
+copying caffe2/proto/caffe2_legacy_pb2.py -> build/lib.linux-armv7l-3.6/caffe2/proto
+...
+
+adding 'torch-1.9.0a0+gitdfbd030.dist-info/DESCRIPTION.rst'
+adding 'torch-1.9.0a0+gitdfbd030.dist-info/entry_points.txt'
+adding 'torch-1.9.0a0+gitdfbd030.dist-info/metadata.json'
+adding 'torch-1.9.0a0+gitdfbd030.dist-info/top_level.txt'
+adding 'torch-1.9.0a0+gitdfbd030.dist-info/WHEEL'
+adding 'torch-1.9.0a0+gitdfbd030.dist-info/METADATA'
+adding 'torch-1.9.0a0+gitdfbd030.dist-info/RECORD'
+```
+
+You can find the wheel file in the `dist` folder (`dist/torch-1.9.0a0+gitdfbd030-cp36-cp36m-linux_armv7l.whl` in this example):
+```
+root@dec5fb7f5b41:~/pytorch-1.9.1# cd dist/
+root@dec5fb7f5b41:~/pytorch-1.9.1/dist# ls
+torch-1.9.0a0+gitdfbd030-cp36-cp36m-linux_armv7l.whl
+```
+
+Copy the wheel file into the shared directory (`/data` in this case), so that the host machine can retrieve the wheel:
+```
+root@dec5fb7f5b41:~/pytorch-1.9.1/dist# ls torch-1.9.0a0+gitdfbd030-cp36-cp36m-linux_armv7l.whl /data
+root@dec5fb7f5b41:~/pytorch-1.9.1/dist# ls /data
+torch-1.9.0a0+gitdfbd030-cp36-cp36m-linux_armv7l.whl
 ```
 
 ## Building TorchVision wheel in the container
+
+Next, I am going to build TorchVision 0.10.1, which is the recommended version for PyTorch 1.9.1.
+
+Before building TorchVision, install PyTorch 1.9.1 from the wheel using `pip3`:
+```
+root@dec5fb7f5b41:~/pytorch-1.9.1/dist# pip3 install torch-1.9.0a0+gitdfbd030-cp36-cp36m-linux_armv7l.whl 
+Processing ./torch-1.9.0a0+gitdfbd030-cp36-cp36m-linux_armv7l.whl
+Requirement already satisfied: typing-extensions in /usr/local/lib/python3.6/dist-packages (from torch==1.9.0a0+gitdfbd030) (3.10.0.2)
+Requirement already satisfied: dataclasses; python_version < "3.7" in /usr/local/lib/python3.6/dist-packages (from torch==1.9.0a0+gitdfbd030) (0.8)
+Installing collected packages: torch
+Successfully installed torch-1.9.0a0+gitdfbd030
+WARNING: You are using pip version 20.2.4; however, version 21.3.1 is available.
+You should consider upgrading via the '/usr/bin/python3.6 -m pip install --upgrade pip' command.
+```
+
+Confirm that PyTorch is successfully installed:
+```
+root@dec5fb7f5b41:~/pytorch-1.9.1/dist# python3
+Python 3.6.5 (default, Apr  1 2018, 05:46:30) 
+[GCC 7.3.0] on linux
+Type "help", "copyright", "credits" or "license" for more information.
+>>> import torch
+>>> torch.__version__
+'1.9.0a0+gitdfbd030'
+```
+
+After the installation is complete, clone the [TorchVision GitHub repository](https://github.com/pytorch/vision.git) and place it somewhere inside the container (`$HOME/torchvision-0.10.1` or `/root/torchvision-0.10.1` in this example):
+```
+root@dec5fb7f5b41:~# git clone https://github.com/pytorch/vision torchvision-0.10.1
+Cloning into 'torchvision-0.10.1'...
+remote: Enumerating objects: 52619, done.
+remote: Counting objects: 100% (18088/18088), done.
+remote: Compressing objects: 100% (3804/3804), done.
+remote: Total 52619 (delta 14953), reused 16912 (delta 14079), pack-reused 34531
+Receiving objects: 100% (52619/52619), 94.22 MiB | 13.56 MiB/s, done.
+Resolving deltas: 100% (41506/41506), done.
+```
+
+Checkout the version you want to use (`v0.10.1` in this case).
+Do not forget to synchronize and update submodules.
+```
+root@dec5fb7f5b41:~/torchvision-0.10.1# git tag
+v0.1.5
+v0.1.6
+v0.1.7
+v0.1.8
+v0.1.9
+v0.10.0
+v0.10.0-rc1
+v0.10.0-rc2
+v0.10.1
+v0.10.1-rc1
+v0.10.1-rc2
+v0.10.1-rc3
+v0.11.0
+v0.11.0-rc1
+v0.11.0-rc2
+v0.11.0-rc3
+...
+
+root@dec5fb7f5b41:~/torchvision-0.10.1# git checkout refs/tags/v0.10.1
+Note: checking out 'refs/tags/v0.10.1'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at ca1a6207 [v0.10.1] .circleci: Bump version for pytorch 1.9.1 (#4399)
+
+root@dec5fb7f5b41:~/torchvision-0.10.1# git submodule sync
+root@dec5fb7f5b41:~/torchvision-0.10.1# git submodule update --init --recursive
+```
+
+Build TorchVision and create a wheel using `setup.py`.
+We do not have to set any environment variables to build TorchVision.
+```
+root@dec5fb7f5b41:~/torchvision-0.10.1# python3 setup.py build        
+Building wheel torchvision-0.10.0a0+ca1a620
+PNG found: True
+libpng version: 1.6.34
+Building torchvision with PNG image support
+libpng include path: /usr/include/libpng16
+Running build on conda-build: False
+Running build on conda: False
+JPEG found: True
+Building torchvision with JPEG image support
+NVJPEG found: False
+FFmpeg found: False
+running build
+running build_py
+creating build
+creating build/lib.linux-armv7l-3.6
+creating build/lib.linux-armv7l-3.6/torchvision
+copying torchvision/utils.py -> build/lib.linux-armv7l-3.6/torchvision
+copying torchvision/version.py -> build/lib.linux-armv7l-3.6/torchvision
+copying torchvision/__init__.py -> build/lib.linux-armv7l-3.6/torchvision
+copying torchvision/extension.py -> build/lib.linux-armv7l-3.6/torchvision
+...
+
+arm-linux-gnueabihf-g++ -pthread -shared -Wl,-O1 -Wl,-Bsymbolic-functions -Wl,-Bsymbolic-functions -specs=/usr/share/dpkg/no-pie-link.specs -Wl,-z,relro -Wl,-Bsymbolic-functions -specs=/usr/share/dpkg/no-pie-link.specs -Wl,-z,relro -mfpu=neon -D__NEON__ -Wdate-time -D_FORTIFY_SOURCE=2 /root/torchvision-0.10.1/build/temp.linux-armv7l-3.6/root/torchvision-0.10.1/torchvision/csrc/io/image/image.o /root/torchvision-0.10.1/build/temp.linux-armv7l-3.6/root/torchvision-0.10.1/torchvision/csrc/io/image/cpu/decode_png.o /root/torchvision-0.10.1/build/temp.linux-armv7l-3.6/root/torchvision-0.10.1/torchvision/csrc/io/image/cpu/decode_jpeg.o /root/torchvision-0.10.1/build/temp.linux-armv7l-3.6/root/torchvision-0.10.1/torchvision/csrc/io/image/cpu/read_write_file.o /root/torchvision-0.10.1/build/temp.linux-armv7l-3.6/root/torchvision-0.10.1/torchvision/csrc/io/image/cpu/common_jpeg.o /root/torchvision-0.10.1/build/temp.linux-armv7l-3.6/root/torchvision-0.10.1/torchvision/csrc/io/image/cpu/encode_png.o /root/torchvision-0.10.1/build/temp.linux-armv7l-3.6/root/torchvision-0.10.1/torchvision/csrc/io/image/cpu/encode_jpeg.o /root/torchvision-0.10.1/build/temp.linux-armv7l-3.6/root/torchvision-0.10.1/torchvision/csrc/io/image/cpu/decode_image.o /root/torchvision-0.10.1/build/temp.linux-armv7l-3.6/root/torchvision-0.10.1/torchvision/csrc/io/image/cuda/decode_jpeg_cuda.o -L/usr/local/lib/python3.6/dist-packages/torch/lib -lpng -ljpeg -lc10 -ltorch -ltorch_cpu -ltorch_python -o build/lib.linux-armv7l-3.6/torchvision/image.so
+
+root@dec5fb7f5b41:~/torchvision-0.10.1# python3 setup.py bdist_wheel
+Building wheel torchvision-0.10.0a0+ca1a620
+PNG found: True
+libpng version: 1.6.34
+Building torchvision with PNG image support
+libpng include path: /usr/include/libpng16
+Running build on conda-build: False
+Running build on conda: False
+JPEG found: True
+Building torchvision with JPEG image support
+NVJPEG found: False
+FFmpeg found: False
+running bdist_wheel
+running build
+running build_py
+copying torchvision/version.py -> build/lib.linux-armv7l-3.6/torchvision
+running build_ext
+building 'torchvision._C' extension
+Emitting ninja build file /root/torchvision-0.10.1/build/temp.linux-armv7l-3.6/build.ninja...
+```
+
+You can find the wheel file in the `dist` folder (`dist/torchvision-0.10.0a0+ca1a620-cp36-cp36m-linux_armv7l.whl` in this example):
+```
+root@dec5fb7f5b41:~/torchvision-0.10.1# cd dist/
+root@dec5fb7f5b41:~/torchvision-0.10.1/dist# ls
+torchvision-0.10.0a0+ca1a620-cp36-cp36m-linux_armv7l.whl
+```
+
+Copy the wheel file into the shared directory (`/data` in this case):
+```
+root@dec5fb7f5b41:~/pytorch-1.9.1/dist# ls torchvision-0.10.0a0+ca1a620-cp36-cp36m-linux_armv7l.whl /data
+root@dec5fb7f5b41:~/pytorch-1.9.1/dist# ls /data
+torch-1.9.0a0+gitdfbd030-cp36-cp36m-linux_armv7l.whl
+torchvision-0.10.0a0+ca1a620-cp36-cp36m-linux_armv7l.whl
+```
+
+You can also install TorchVision 0.10.1 using `pip3`:
+```
+root@dec5fb7f5b41:~/torchvision-0.10.1/dist# pip3 install torchvision-0.10.0a0+ca1a620-cp36-cp36m-linux_armv7l.whl
+Processing ./torchvision-0.10.0a0+ca1a620-cp36-cp36m-linux_armv7l.whl
+Requirement already satisfied: torch in /usr/local/lib/python3.6/dist-packages (from torchvision==0.10.0a0+ca1a620) (1.9.0a0+gitdfbd030)
+Collecting pillow>=5.3.0
+  Downloading Pillow-8.4.0.tar.gz (49.4 MB)
+     |################################| 49.4 MB 24 kB/s
+Requirement already satisfied: numpy in /usr/local/lib/python3.6/dist-packages (from torchvision==0.10.0a0+ca1a620) (1.16.0)
+Requirement already satisfied: typing-extensions in /usr/local/lib/python3.6/dist-packages (from torch->torchvision==0.10.0a0+ca1a620) (3.10.0.2)
+Requirement already satisfied: dataclasses; python_version < "3.7" in /usr/local/lib/python3.6/dist-packages (from torch->torchvision==0.10.0a0+ca1a620) (0.8)
+Building wheels for collected packages: pillow
+  Building wheel for pillow (setup.py) ... done
+  Created wheel for pillow: filename=Pillow-8.4.0-cp36-cp36m-linux_armv7l.whl size=1143853 sha256=ba1a8fcbe4bf62fbd2446f153d6a219858edb81e472515cf14cfea178543f35f
+  Stored in directory: /root/.cache/pip/wheels/a9/ae/b0/d98758d9401a31bbaa3fe46a37144b3e1a130dcc6ae80c21b6
+Successfully built pillow
+Installing collected packages: pillow, torchvision
+  Attempting uninstall: pillow
+    Found existing installation: Pillow 5.1.0
+    Uninstalling Pillow-5.1.0:
+      Successfully uninstalled Pillow-5.1.0
+Successfully installed pillow-8.4.0 torchvision-0.10.0a0+ca1a620
+WARNING: You are using pip version 20.2.4; however, version 21.3.1 is available.
+You should consider upgrading via the '/usr/bin/python3.6 -m pip install --upgrade pip' command.
+
+root@dec5fb7f5b41:~/torchvision-0.10.1/dist# python3
+Python 3.6.5 (default, Apr  1 2018, 05:46:30) 
+[GCC 7.3.0] on linux
+Type "help", "copyright", "credits" or "license" for more information.
+>>> import torch
+>>> torch.__version__
+'1.9.0a0+gitdfbd030'
+>>>        
+>>> import torchvision
+>>> torchvision.__version__
+'0.10.0a0+ca1a620'
+>>>
+```
 
