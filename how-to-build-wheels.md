@@ -427,7 +427,7 @@ root@dec5fb7f5b41:~/pytorch-1.9.1# cat setup.py | head -n 70
 CMake module `cmake/Modules/FindARM.cmake` checks whether the Neon instruction is available or not on the machine by reading `/proc/cpuinfo`, and another CMake module `cmake/Dependencies.cmake` appends the compiler options to use Neon intrinsics (`-mfpu=neon -D__NEON__`).
 In the Docker container, however, `cat /proc/cpuinfo` prints the CPU information of the host machine (Intel Xeon E5-1620 in this case), and Neon intrinsics is not detected.
 For workaround, we manually append the compiler options (`-mfpu=neon -D__NEON__`) to use Neon intrinsics.
-If you are building wheels for ZCU-104 (aarch64), set `CFLAGS="-D__NEON__"` instead of `CFLAGS="-mfpu=neon -D__NEON__"`.
+**If you are building wheels for ZCU-104 (aarch64), set `CFLAGS="-D__NEON__"` instead of `CFLAGS="-mfpu=neon -D__NEON__"`.**
 - Set `USE_CUDA=0` and `USE_CUDNN=0` to disable CUDA and cuDNN builds, because these are not available on the Pynq-Z2 and ZCU-104.
 - Set `BUILD_TEST=0` to disable the test build and reduce the compile time.
 - Set `USE_MKLDNN=0` to disable use of MKLDNN (Intel Math Kernel Library for Deep Neural Networks), because we are going to build for ARM Cortex CPUs.
