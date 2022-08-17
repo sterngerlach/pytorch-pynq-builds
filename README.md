@@ -32,6 +32,8 @@ See [here](./how-to-build-wheels.md) to build wheels using Docker and Pynq rootf
 
 ## Environment variables for building PyTorch wheels (ZCU-104, Pynq Linux v2.7)
 - PyTorch 1.10.2: See [aarch64-pynq-2.7/pytorch-1.10.2-set-env.sh](./aarch64-pynq-2.7/pytorch-1.10.2-set-env.sh)
+- PyTorch 1.11.0: See [aarch64-pynq-2.7/pytorch-1.11.0-set-env.sh](./aarch64-pynq-2.7/pytorch-1.11.0-set-env.sh)
+- PyTorch 1.12.0: See [aarch64-pynq-2.7/pytorch-1.12.0-set-env.sh](./aarch64-pynq-2.7/pytorch-1.12.0-set-env.sh)
 
 ## Environment variables for building PyTorch wheels (Ultra96v2, Pynq Linux v2.7)
 - PyTorch 1.10.2: See [ultra96v2-pynq-2.7/pytorch-1.10.2-set-env.sh](./ultra96v2-pynq-2.7/pytorch-1.10.2-set-env.sh)
@@ -59,10 +61,14 @@ See [here](./how-to-build-wheels.md) to build wheels using Docker and Pynq rootf
 ## List of wheel files for PyTorch (ZCU-104, Pynq Linux v2.7)
 - Wheels are placed under `aarch64-pynq-2.7-pytorch`.
 - PyTorch 1.10.2: `torch-1.10.0a0+git71f889c-cp38-cp38-linux_aarch64.whl`
+- PyTorch 1.11.0: `torch-1.11.0a0+gitbc2c6ed-cp38-cp38-linux_aarch64.whl`
+- PyTorch 1.12.0: `torch-1.12.0a0+git67ece03-cp38-cp38-linux_aarch64.whl`
 
 ## List of wheel files for TorchVision (ZCU-104, Pynq Linux v2.7)
 - Wheels are placed under `aarch64-pynq-2.7-torchvision`.
 - TorchVision 0.11.3: `torchvision-0.11.0a0+05eae32-cp38-cp38-linux_aarch64.whl`
+- TorchVision 0.12.0: `torchvision-0.12.0a0+9b5a3fe-cp38-cp38-linux_aarch64.whl`
+- TorchVision 0.13.0: `torchvision-0.13.0a0+da3794e-cp38-cp38-linux_aarch64.whl`
 
 ## List of wheel files for PyTorch (Ultra96v2, Pynq Linux v2.7)
 - Wheels are placed under `ultra96v2-pynq-2.7-pytorch`.
